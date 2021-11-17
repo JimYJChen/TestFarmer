@@ -1,0 +1,19 @@
+{
+  "manifest_version":2,
+  "name": "Farmers world",
+  "version": "1.0",
+  "description": "Farmers world auto script",
+  "permissions":[ 
+        "https://play.farmersworld.io/*",
+        "contextMenus",
+        "tabs"
+      ],
+      "browser_action": {
+        "default_popup": "popup.html"
+      },
+  "content_scripts":[{   
+    "matches":["*://play.farmersworld.io/*"],
+      "js":["JQ.js","options.js"],
+      "run_at": "document_start"
+    }]
+}
