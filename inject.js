@@ -1,117 +1,86 @@
 console.log("#####################")
-function StartUp() {
+async function StartUp() {
+
+    /*
+    * Buttons
+    */
+    const constantVal = {
+      fee5 : "Fee: 5%"
+    }
+    //Map button
     const mapBtn = document.querySelector(".navbar-group--icon[alt='Smithy']");
+    //Exchange button
+    const exchangeRelated = {
+      exgBtn : ".navbar-group--icon[alt='Exchange']",
+      fee : ".withdraw-tax-tag",
+      exgPage : ".exchange-navbar",
+      exchangeBtn : ".button-section"
+    }
+    
+    const exgBtn = ".navbar-group--icon[alt='Exchange']"
+
+    //Energy related
+    const energyRelated = {
+      energyBtn : ".resource-energy--plus[alt='plus']",
+      energyPage : ".modal-body",
+      inputBox : ".modal-input",
+      exchangeBtn : ".button",
+      plusIcon : ".image-button[alt='Plus Icon']"
+    };
+    const mineRelated = {
+      buttons : ".info-section .plain-button"
+    }
     mapBtn.click();
+    //Loop for mining
+    for (const [indexItem, item] of document
+                .querySelectorAll(".vertical-carousel-container img")
+                .entries()) {
+        console.log(item)
+        item.click();
+        await delay(5e3);
+        let buttons = get_values(mineRelated.buttons);
+        //Count down
+        buttons[0].click();
+        //TODO Miss ok button
+
+        //Repuired button
+        buttons[1].click();
+    }
+
+    //Energy
+    //Load energy page
+    get_values(energyRelated.energyBtn).click();
+    if(get_values(energyRelated.energyPage) != "null"){
+      for(let index = 0; index <=20; index ++){
+        await get_values(energyRelated.plusIcon).click();
+      }
+      await delay(1e2);
+      //submit energy
+      await get_values(energyRelated.exchangeBtn).click();
+    }
+    //Check Exchange
+    get_values(exchangeRelated.exgBtn).click();
+    if(get_values(exchangeRelated.exgPage) != null){
+      if(get_values(exchangeRelated.fee) == constantVal.fee5){
+        //get Balance
+        let wood_Balance = document.querySelectorAll(".resource-balance-amount")[1];
+        document.querySelectorAll(".exchange-input")[1].value = wood_Balance;
+        get_values(exchangeRelated.exgBtn).click();
+      }
+    }
+    /*
+    
+    */
+
+   
+
+}
+async function delay(delayTime){
+  await new Promise((res) => setTimeout(res, delayTime));
+
+}
+function get_values(querySelector){
+  return document.querySelector(querySelector);
 }
 
 StartUp();
-
-function _Start(){
-    for (let mapId = 0; mapId < 4; ++mapId) {
-        if (typeof result[mapId] === "undefined") result[mapId] = {};
-  
-        await new Promise((res) => setTimeout(res, 5e3));
-  
-        const map = document.querySelectorAll(".map-container-bg")[mapId];
-  
-        if (map.style.filter === "grayscale(1)") continue;
-  
-        map.click();
-  
-        await new Promise((res) => setTimeout(res, 5e3));
-  
-        for (const [indexItem, item] of document
-          .querySelectorAll(".vertical-carousel-container img")
-          .entries()) {
-          if (typeof result[mapId][indexItem] === "undefined")
-            result[mapId][indexItem] = 0;
-  
-          item.click();
-  
-          await new Promise((res) => setTimeout(res, 1e3));
-  
-          const buttonMine = document.querySelector(
-            ".info-section .plain-button"
-          );
-          const timeToEnd = document.querySelector(
-            ".info-section .info-time"
-          ).innerText;
-          if (
-            ![...buttonMine.classList].includes("disabled") &&
-            timeToEnd === "00:00:00"
-          ) {
-            const boxdaylyLimit = [
-              ...document.querySelectorAll(".info-label"),
-            ].find((el) => el.innerText.includes("Daily Claim Limit"));
-            if (boxdaylyLimit) {
-              const dailyLimit = boxdaylyLimit.querySelector("div").innerText;
-              if (result[mapId][indexItem] >= dailyLimit) continue;
-            }
-  
-            buttonMine.click();
-            ++result[mapId][indexItem];
-  
-            await new Promise((res) => setTimeout(res, 1e3));
-  
-            // If map with mining
-            if (mapId === 0) {
-              while (
-                !(
-                  document.querySelector(".modal__button-group .plain-button") ||
-                  document.querySelector(".modal-stake .modal-stake-close img")
-                )
-              ) {
-                await new Promise((res) => setTimeout(res, 5e3));
-              }
-  
-              await new Promise((res) => setTimeout(res, 5e3));
-  
-              (
-                document.querySelector(".modal__button-group .plain-button") ||
-                document.querySelector(".modal-stake .modal-stake-close img")
-              ).click();
-  
-              await new Promise((res) => setTimeout(res, 1e3));
-  
-              // Repair instruments
-              const buttonRepair = document.querySelectorAll(
-                ".info-section .plain-button"
-              )[1];
-              const quality = eval(
-                document.querySelector(".card-number").innerText
-              );
-              if (
-                ![...buttonRepair.classList].includes("disabled") &&
-                quality < 0.5
-              ) {
-                buttonRepair.click();
-                await new Promise((res) => setTimeout(res, 1e3));
-              }
-            }
-  
-            await new Promise((res) => setTimeout(res, 1e4));
-  
-            const currentEnergy = +document.querySelectorAll(
-              ".resource-number div"
-            )[3].innerText;
-            const currentFish =
-              +document.querySelectorAll(".resource-number")[2].innerText;
-            if (currentEnergy < 200 && currentFish > 20) {
-              document.querySelector(".resource-energy img").click();
-              await new Promise((res) => setTimeout(res, 1e3));
-  
-              for (let i = 0; i++ < 20; ) {
-                document.querySelector(".image-button[alt='Plus Icon']").click();
-                await new Promise((res) => setTimeout(res, 5e2));
-              }
-  
-              document.querySelector(".modal-wrapper .plain-button").click();
-  
-              await new Promise((res) => setTimeout(res, 2e4));
-            }
-          }
-        }
-  
-        mapBtn.click();
-      }
-}
